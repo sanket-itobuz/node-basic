@@ -1,9 +1,16 @@
-{
-    "id" : "",
-    "title" : "",
-    "creationDate" : "",
-    "isCompleted" : "",
-    "isImportant" : "",
-    "tags" : [],
-    "updatedAt" : ""
-}
+[
+  {
+    "id": "7150294f-e7dd-431c-ba23-521f3cbaee0f",
+    "title": "Learn Python",
+    "description": "Practice basics",
+    "createdAt": "4/10/2025",
+    "isCompleted": true,
+    "isImportant": true,
+    "tags": [
+      "october",
+      "monthly",
+      "required"
+    ],
+    "updatedAt": "4/10/2025"
+  }
+]

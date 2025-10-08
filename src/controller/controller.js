@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid'
 import fileio from '../utility/fileio.js'
+import taskSchema from '../schema/taskSchema.js'
 
 export const getAllTasks = async (req, res, next) => {
   try {
@@ -13,19 +13,9 @@ export const getAllTasks = async (req, res, next) => {
 export const saveTask = async (req, res, next) => {
   try {
     const tasks = await fileio.readTasks()
-    const date = new Date()
-
-    const newTask = {
-      id: uuidv4(),
-      title: req.body.title,
-      description: req.body.description,
-      createdAt: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-      isCompleted: false,
-      isImportant: req.body.isImportant,
-      tags: req.body.tags || [],
-      updatedAt: null,
-    }
-    tasks.push(newTask)
+    const newTask = req.body
+    const task = await taskSchema.validate(newTask, { abortEarly: false })
+    tasks.push(task)
     await fileio.writeTasks(tasks)
     res.send('Task Added Successfully')
   } catch (err) {
@@ -107,8 +97,28 @@ export const searchTask = async (req, res, next) => {
   try {
     let tasks = await fileio.readTasks()
     const searchTitle = req.query.title
-    tasks = tasks.filter((task) => task.startsWith(searchTitle))
-    res.json(tasks)
+    const searchTag = req.query.tag
+    let filteredTasks = tasks
+
+    if (
+      (searchTitle && searchTitle.trim() !== '') ||
+      (searchTag && searchTag.trim() !== '')
+    ) {
+      const lowerCaseSearchTitle = searchTitle ? searchTitle.toLowerCase() : ''
+      const lowerCaseSearchTag = searchTag ? searchTag.toLowerCase() : ''
+
+      filteredTasks = tasks.filter((task) => {
+        const titleMatch = searchTitle
+          ? task.title?.toLowerCase().includes(lowerCaseSearchTitle)
+          : true
+        const tagMatch = searchTag
+          ? task.tags?.includes(lowerCaseSearchTag)
+          : true
+
+        return titleMatch && tagMatch
+      })
+    }
+    res.json(filteredTasks)
   } catch (err) {
     next(err)
   }

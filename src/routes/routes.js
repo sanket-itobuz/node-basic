@@ -4,6 +4,7 @@ import {
   deleteTask,
   getAllTasks,
   saveTask,
+  searchTask,
   updateTask,
 } from '../controller/controller.js'
 
@@ -26,5 +27,7 @@ route.put('/tasks/:id', updateTask)
 route.delete('/tasks/:id', deleteTask)
 
 route.delete('/tasks', deleteAllTasks)
+
+route.get('/tasks/search', searchTask)
 
 export default route

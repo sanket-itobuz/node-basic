@@ -3,7 +3,7 @@ import * as yup from 'yup'
 // Validating the data coming from Client Side to process further
 
 export const insertTaskSchema = yup.object({
-  title: yup.string().required(),
+  title: yup.string(),
   description: yup.string().nullable().optional(),
   isCompleted: yup.boolean().default(false),
   isImportant: yup.boolean().required(),

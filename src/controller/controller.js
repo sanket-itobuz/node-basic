@@ -1,7 +1,7 @@
 // import fileio from '../utility/fileio.js'
 import { insertTaskSchema } from '../schema/taskSchema.js'
 import Task from '../model/todo.js'
-import { validate } from '../validate/validator.js'
+import validator from '../validate/validator.js'
 
 /** 
 
@@ -142,7 +142,7 @@ export const getAllTodos = async (req, res, next) => {
 export const saveTodo = async (req, res, next) => {
   try {
     const newTodo = req.body
-    const validTodo = await validate(insertTaskSchema, newTodo, next)
+    const validTodo = await validator(insertTaskSchema, newTodo, next)
     const todo = await Task.create(validTodo)
     res.send('Task Successfully Added')
     console.log(todo)

@@ -1,11 +1,9 @@
 import express from 'express'
 import {
-  deleteAllTasks,
-  deleteTask,
-  getAllTasks,
-  saveTask,
-  searchTask,
-  updateTask,
+  saveTodo,
+  getAllTodos,
+  deleteAllTodos,
+  deleteTodo,
 } from '../controller/controller.js'
 
 const route = express.Router()
@@ -18,16 +16,16 @@ route.all('/', (req, res) => {
   )
 })
 
-route.get('/tasks', getAllTasks)
+route.get('/tasks', getAllTodos)
 
-route.post('/tasks', saveTask)
+route.post('/tasks', saveTodo)
 
-route.put('/tasks/:id', updateTask)
+// route.put('/tasks/:id', updateTask)
 
-route.delete('/tasks/:id', deleteTask)
+route.delete('/tasks/:id', deleteTodo)
 
-route.delete('/tasks', deleteAllTasks)
+route.delete('/tasks', deleteAllTodos)
 
-route.get('/tasks/search', searchTask)
+// route.get('/tasks/search', searchTask)
 
 export default route

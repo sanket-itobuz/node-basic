@@ -1,18 +1,22 @@
 import * as yup from 'yup'
-import { v4 as uuidv4 } from 'uuid'
 
-const taskSchema = yup.object({
-  id: yup
-    .string()
-    .uuid()
-    .default(() => uuidv4()),
+// Validating the data coming from Client Side to process further
+
+export const insertTaskSchema = yup.object({
   title: yup.string().required(),
   description: yup.string().nullable().optional(),
-  createdAt: yup.date().default(() => new Date()),
   isCompleted: yup.boolean().default(false),
   isImportant: yup.boolean().required(),
   tags: yup.array().of(yup.string()),
-  updatedAt: yup.date().nullable().default(null),
 })
 
-export default taskSchema
+export const updateTaskSchema = yup.object({
+  title: yup.string().optional(),
+  description: yup.string().optional(),
+  isCompleted: yup.boolean().optional(),
+})
+
+export const searchTaskSchema = yup.object({
+  title: yup.string().optional(),
+  tag: yup.string(),
+})

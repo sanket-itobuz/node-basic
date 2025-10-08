@@ -1,5 +1,9 @@
-import fileio from '../utility/fileio.js'
-import taskSchema from '../schema/taskSchema.js'
+// import fileio from '../utility/fileio.js'
+import { insertTaskSchema } from '../schema/taskSchema.js'
+import Task from '../model/todo.js'
+import { validate } from '../validate/validator.js'
+
+/** 
 
 export const getAllTasks = async (req, res, next) => {
   try {
@@ -119,6 +123,48 @@ export const searchTask = async (req, res, next) => {
       })
     }
     res.json(filteredTasks)
+  } catch (err) {
+    next(err)
+  }
+}
+
+*/
+
+export const getAllTodos = async (req, res, next) => {
+  try {
+    const allTodos = await Task.find({})
+    res.send(allTodos)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const saveTodo = async (req, res, next) => {
+  try {
+    const newTodo = req.body
+    const validTodo = await validate(insertTaskSchema, newTodo, next)
+    const todo = await Task.create(validTodo)
+    res.send('Task Successfully Added')
+    console.log(todo)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const deleteTodo = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    await Task.findByIdAndDelete(id)
+    res.send({ message: `Todo of ${id} successfully Deleted` })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const deleteAllTodos = async (req, res, next) => {
+  try {
+    const allTodos = await Task.deleteMany({})
+    res.json({ message: 'All Todos successfully Deleted', todos: allTodos })
   } catch (err) {
     next(err)
   }

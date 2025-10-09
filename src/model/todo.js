@@ -27,5 +27,7 @@ const taskModel = new mongoose.Schema(
   }
 )
 
+taskModel.index({ title: 'text', tags: 'text' })
+
 const task = mongoose.model('Task', taskModel)
 export default task

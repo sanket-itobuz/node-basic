@@ -1,31 +1,38 @@
 import express from 'express'
-import {
-  saveTodo,
-  getAllTodos,
-  deleteAllTodos,
-  deleteTodo,
-} from '../controller/controller.js'
+import ToDoOperations from '../controller/controller.js'
+import ToDoValidations from '../validate/validator.js'
 
 const route = express.Router()
 
-// Home Page Response
+const requestValidation = new ToDoValidations()
+const requestOperations = new ToDoOperations()
 
 route.all('/', (req, res) => {
-  res.send(
-    '<h1>Welcome to the Home Page of Your Personalized To-Do Application</h1>'
-  )
+  res.send('Welcome to the Home Page of Your Personalized To-Do Application')
 })
 
-route.get('/tasks', getAllTodos)
+route.get('/tasks', requestOperations.getAllTodos)
 
-route.post('/tasks', saveTodo)
+route.post(
+  '/tasks',
+  requestValidation.validateInsertRequest,
+  requestOperations.saveTodo
+)
 
-// route.put('/tasks/:id', updateTask)
+route.put(
+  '/tasks',
+  requestValidation.validateUpdateRequest,
+  requestOperations.editTodo
+)
 
-route.delete('/tasks/:id', deleteTodo)
+route.delete('/tasks/:id', requestOperations.deleteTodo)
 
-route.delete('/tasks', deleteAllTodos)
+route.delete('/tasks', requestOperations.deleteAllTodos)
 
-// route.get('/tasks/search', searchTask)
+route.get(
+  '/tasks/search',
+  requestValidation.validateSearchRequest,
+  requestOperations.searchTodos
+)
 
 export default route

@@ -1,7 +1,4 @@
-// import fileio from '../utility/fileio.js'
-import { insertTaskSchema } from '../schema/taskSchema.js'
 import Task from '../model/todo.js'
-import validator from '../validate/validator.js'
 
 /** 
 
@@ -130,42 +127,94 @@ export const searchTask = async (req, res, next) => {
 
 */
 
-export const getAllTodos = async (req, res, next) => {
-  try {
-    const allTodos = await Task.find({})
-    res.send(allTodos)
-  } catch (err) {
-    next(err)
+export default class ToDoOperations {
+  getAllTodos = async (req, res, next) => {
+    try {
+      const allTodos = await Task.find({})
+      res.send(allTodos)
+    } catch (err) {
+      next(err)
+    }
   }
-}
 
-export const saveTodo = async (req, res, next) => {
-  try {
-    const newTodo = req.body
-    const validTodo = await validator(insertTaskSchema, newTodo, next)
-    const todo = await Task.create(validTodo)
-    res.send('Task Successfully Added')
-    console.log(todo)
-  } catch (err) {
-    next(err)
+  saveTodo = async (req, res, next) => {
+    try {
+      const newTodo = req.body
+      const todo = await Task.create(newTodo)
+      res.send('Todo Successfully Added')
+      console.log(todo)
+    } catch (err) {
+      next(err)
+    }
   }
-}
 
-export const deleteTodo = async (req, res, next) => {
-  try {
-    const id = req.params.id
-    await Task.findByIdAndDelete(id)
-    res.send({ message: `Todo of ${id} successfully Deleted` })
-  } catch (err) {
-    next(err)
+  editTodo = async (req, res, next) => {
+    try {
+      const editTodo = req.body
+      const id = req.body.id
+      const updatedTask = await Task.findByIdAndUpdate(
+        id,
+        editTodo,
+        { new: true, runValidators: true } // Update options
+      )
+      if (!updatedTask) {
+        return res.status(404).send('Task not found')
+      }
+      res.json(updatedTask)
+      console.log(editTodo)
+    } catch (err) {
+      next(err)
+    }
   }
-}
 
-export const deleteAllTodos = async (req, res, next) => {
-  try {
-    const allTodos = await Task.deleteMany({})
-    res.json({ message: 'All Todos successfully Deleted', todos: allTodos })
-  } catch (err) {
-    next(err)
+  deleteTodo = async (req, res, next) => {
+    try {
+      const id = req.params.id
+      await Task.findByIdAndDelete(id)
+      res.send({ message: `Todo of ${id} successfully Deleted` })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  deleteAllTodos = async (req, res, next) => {
+    try {
+      const allTodos = await Task.deleteMany({})
+      res.json({ message: 'All Todos successfully Deleted', todos: allTodos })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  searchTodos = async (req, res, next) => {
+    try {
+      const searchTitle = req.query.title
+      const searchTag = req.query.tag
+
+      const allTodos = await Task.find({})
+
+      let filteredTodos
+
+      if (searchTitle || searchTag) {
+        const lowerCaseSearchTitle = searchTitle
+          ? searchTitle.toLowerCase()
+          : ''
+        const lowerCaseSearchTag = searchTag ? searchTag.toLowerCase() : ''
+
+        filteredTodos = allTodos.filter((task) => {
+          const titleMatch = searchTitle
+            ? task.title?.toLowerCase().includes(lowerCaseSearchTitle)
+            : true
+          const tagMatch = searchTag
+            ? task.tags?.includes(lowerCaseSearchTag)
+            : true
+
+          return titleMatch && tagMatch
+        })
+      }
+      res.send(filteredTodos)
+    } catch (err) {
+      next(err)
+    }
   }
 }

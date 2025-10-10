@@ -1,24 +1,28 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import router from './routes/routes.js'
-import cors from 'cors'
-import errorHandler from './error/errorhandler.js'
-import connectDatabase from './db_config/db_connection.js'
+import express from 'express';
+import dotenv from 'dotenv';
+import taskRouter from './routes/taskRoutes.js';
+import userRouter from './routes/userAuthRoutes.js';
+import cors from 'cors';
+import errorHandler from './error/errorhandler.js';
+import connectDatabase from './dbConfig/dbConnection.js';
+import loggerMiddleware from './middleware/loggerMiddleware.js';
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
-const port = process.env.PORT
+const app = express();
+const port = process.env.PORT;
 
-connectDatabase()
+connectDatabase();
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
+app.use(loggerMiddleware);
 
-app.use('/', router)
+app.use('/tasks', taskRouter);
+app.use('/user', userRouter);
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Server Listening on PORT : ${port}`)
-})
+  console.log(`Server Listening on PORT : ${port}`);
+});

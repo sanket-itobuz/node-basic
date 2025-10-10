@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const taskModel = new mongoose.Schema(
   {
@@ -25,9 +25,15 @@ const taskModel = new mongoose.Schema(
   {
     timestamps: true,
   }
-)
+);
 
-taskModel.index({ title: 'text', tags: 'text' })
+taskModel.query.byTitle = function (title) {
+  return this.where({ title: new RegExp(title, 'i') });
+};
 
-const task = mongoose.model('Task', taskModel)
-export default task
+taskModel.query.byTag = function (tag) {
+  return this.where({ tags: new RegExp(tag, 'i') });
+};
+
+const task = mongoose.model('Task', taskModel);
+export default task;

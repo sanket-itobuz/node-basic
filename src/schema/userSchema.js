@@ -2,16 +2,20 @@ import * as yup from 'yup';
 
 // Validating the data coming from Client Side to process further
 
-export const authUserSchema = yup.object({
+export const authSignupUserSchema = yup.object({
   username: yup.string().required(),
   email: yup.string().required(),
   password: yup.string().required(),
+  otp: yup.string(),
   role: yup.string(),
+  isVerified: yup.string(),
+});
+
+export const authUserLoginSchema = yup.object({
+  username: yup.string().required(),
+  password: yup.string().required(),
 });
 
 export const updateUserSchema = yup.object({
-  id: yup.string().optional().required(),
-  username: yup.string().optional(),
-  email: yup.string().optional(),
-  password: yup.boolean().required(),
+  password: yup.string().required(),
 });

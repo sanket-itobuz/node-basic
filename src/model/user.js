@@ -22,6 +22,13 @@ const userModel = new mongoose.Schema(
       required: true,
       enum: ['user', 'admin'],
     },
+    otp: {
+      type: String,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

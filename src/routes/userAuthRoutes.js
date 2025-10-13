@@ -1,6 +1,7 @@
 import express from 'express';
 import UserOperations from '../controller/userController.js';
 import UserValidations from '../validate/userValidator.js';
+import sendOTP from '../controller/otpController.js';
 
 const route = express.Router();
 
@@ -12,8 +13,13 @@ route.post(
   userAuthValidations.validateSignUpRequest,
   userAuthOperations.saveUser
 );
-// route.post('/auth/login');
-// route.post('/auth/otp');
+route.post(
+  '/auth/login',
+  userAuthValidations.validateLoginRequest,
+  userAuthOperations.loginUser
+);
+route.post('/auth/otp', sendOTP);
+
 // route.post('/auth/resetpassword');
 
 export default route;

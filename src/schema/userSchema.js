@@ -16,6 +16,7 @@ export const authUserLoginSchema = yup.object({
   password: yup.string().required(),
 });
 
-export const updateUserSchema = yup.object({
+export const updatePasswordSchema = yup.object({
   password: yup.string().required(),
+  otp: yup.string(),
 });

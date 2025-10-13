@@ -14,33 +14,32 @@ export default class UserOperations {
   saveUser = async (req, res, next) => {
     try {
       const { username, email, password, role, otp, isVerified } = req.body;
-      console.log({ username, email, password, role, otp, isVerified });
 
       const existingUser = await User.findOne({ email });
 
-      if (existingUser) {
+      if (existingUser || isVerified) {
         return res.status(400).json({
           success: false,
           message: 'User already exists',
         });
       }
+
       // Find the most recent OTP for the email
       const response = await OTP.find({ email })
         .sort({ createdAt: -1 })
         .limit(1);
+
       if (response.length === 0 || otp !== response[0].otp) {
         return res.status(400).json({
           success: false,
           message: 'The OTP is not valid',
         });
       }
-      // Secure password
-      let hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = await User.create({
         username,
         email,
-        password: hashedPassword,
+        password,
         role,
         isVerified: true,
       });
@@ -80,6 +79,41 @@ export default class UserOperations {
         expiresIn: process.env.JWT_TOKEN_EXPIRY,
       });
       res.status(200).json({ success: true, token: token, user: user });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  resetPassword = async (req, res, next) => {
+    try {
+      console.log('reset-password');
+      const otp = req.body.otp;
+      const email = req.body.email;
+
+      // Find the most recent OTP for the email
+      const response = await OTP.find({ email })
+        .sort({ createdAt: -1 })
+        .limit(1);
+
+      if (response.length === 0 || otp !== response[0].otp) {
+        return res.status(400).json({
+          success: false,
+          message: 'The OTP is not valid',
+        });
+      }
+
+      const filter = { email: email };
+
+      const updatedUser = await User.findOneAndUpdate(filter, req.body, {
+        new: true,
+      });
+
+      console.log(updatedUser);
+      res.status(201).json({
+        message: 'Password successfully updated',
+        success: true,
+        updatedUser,
+      });
     } catch (err) {
       next(err);
     }

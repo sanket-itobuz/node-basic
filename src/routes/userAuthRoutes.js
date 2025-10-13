@@ -20,6 +20,10 @@ route.post(
 );
 route.post('/auth/otp', sendOTP);
 
-// route.post('/auth/resetpassword');
+route.post(
+  '/auth/reset',
+  userAuthValidations.validateResetPasswordRequest,
+  userAuthOperations.resetPassword
+);
 
 export default route;

@@ -1,8 +1,10 @@
 import {
   authSignupUserSchema,
   authUserLoginSchema,
-  updateUserSchema,
+  updatePasswordSchema,
 } from '../schema/userSchema.js';
+
+import bcrypt from 'bcrypt';
 
 export default class UserValidations {
   validateSignUpRequest = async (req, res, next) => {
@@ -12,6 +14,7 @@ export default class UserValidations {
       } else {
         req.body.role = 'user';
       }
+      req.body.password = await bcrypt(req.body.password, 10);
 
       const validUser = await authSignupUserSchema.validate(req.body, {
         abortEarly: false,
@@ -40,7 +43,8 @@ export default class UserValidations {
 
   validateResetPasswordRequest = async (req, res, next) => {
     try {
-      const validResetRequest = await updateUserSchema.validate(req.body, {
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+      const validResetRequest = await updatePasswordSchema.validate(req.body, {
         abortEarly: false,
         stripUnknown: true,
       });

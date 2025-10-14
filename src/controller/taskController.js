@@ -3,9 +3,10 @@ import Task from '../model/todo.js';
 export default class ToDoOperations {
   getAllTodos = async (req, res, next) => {
     try {
-      const allTodos = await Task.find({});
+      const userId = req.userId;
+      const allTodos = await Task.find({ userId });
 
-      res.send(allTodos);
+      res.status(200).json(allTodos);
     } catch (err) {
       next(err);
     }
@@ -16,7 +17,9 @@ export default class ToDoOperations {
       const newTodo = req.body;
       const todo = await Task.create(newTodo);
 
-      res.send('Todo Successfully Added');
+      res
+        .status(200)
+        .json({ message: 'Todo Successfully Added', success: true });
       console.log(todo);
     } catch (err) {
       next(err);
@@ -27,16 +30,25 @@ export default class ToDoOperations {
     try {
       const editTodo = req.body;
       const id = req.body.id;
-      const updatedTask = await Task.findByIdAndUpdate(
-        id,
+      const userId = req.body.userId;
+
+      const updatedTask = await Task.updateOne(
+        { _id: id, userId },
         editTodo,
         { new: true, runValidators: true } // Update options
       );
+
       if (!updatedTask) {
-        return res.status(404).send('Task not found');
+        return res
+          .status(404)
+          .json({ message: 'Task not found', success: false });
       }
-      res.json(updatedTask);
-      console.log(editTodo);
+
+      res.status(200).json({
+        message: 'Task Updated Successfully',
+        success: true,
+        updatedTask,
+      });
     } catch (err) {
       next(err);
     }
@@ -45,8 +57,15 @@ export default class ToDoOperations {
   deleteTodo = async (req, res, next) => {
     try {
       const id = req.params.id;
-      await Task.findByIdAndDelete(id);
-      res.send({ message: `Todo of ${id} successfully Deleted` });
+      // const userId = req.userId;
+
+      const deletedItem = await Task.findByIdAndDelete(id);
+
+      res.status(200).json({
+        message: `Todo with id : ${id} successfully Deleted`,
+        success: true,
+        deletedItem,
+      });
     } catch (err) {
       next(err);
     }
@@ -54,8 +73,17 @@ export default class ToDoOperations {
 
   deleteAllTodos = async (req, res, next) => {
     try {
-      const allTodos = await Task.deleteMany({});
-      res.json({ message: 'All Todos successfully Deleted', todos: allTodos });
+      const userId = req.userId;
+
+      console.log(userId);
+
+      const allTodos = await Task.deleteMany({ userId });
+
+      res.status(200).json({
+        message: 'All Todos successfully Deleted',
+        success: true,
+        todos: allTodos,
+      });
     } catch (err) {
       next(err);
     }
@@ -63,15 +91,20 @@ export default class ToDoOperations {
 
   searchTodos = async (req, res, next) => {
     try {
+      const userId = req.userId;
       const searchTitle = req.query.title;
       const searchTag = req.query.tag;
 
       let filteredTodos;
 
       if (searchTitle || searchTag) {
-        filteredTodos = await Task.find().byTitle(searchTitle).byTag(searchTag);
+        filteredTodos = await Task.find()
+          .byUserId(userId)
+          .byTitle(searchTitle)
+          .byTag(searchTag);
       }
-      res.send(filteredTodos);
+
+      res.json(filteredTodos);
     } catch (err) {
       next(err);
     }
@@ -83,6 +116,7 @@ export default class ToDoOperations {
         isImportant: 'desc',
         isCompleted: 'asc',
       });
+
       res.send(allTodos);
     } catch (err) {
       next(err);

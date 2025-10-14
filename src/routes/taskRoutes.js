@@ -7,30 +7,42 @@ const route = express.Router();
 const todoRequestValidation = new ToDoValidations();
 const todoRequestOperations = new ToDoOperations();
 
-route.get('/tasks', todoRequestOperations.sortTodos);
+route.get(
+  '/fetch',
+  todoRequestValidation.validateFetchRequest,
+  todoRequestOperations.getAllTodos
+);
 
 route.post(
-  '/tasks',
+  '/save',
   todoRequestValidation.validateInsertRequest,
   todoRequestOperations.saveTodo
 );
 
 route.put(
-  '/tasks',
+  '/edit',
   todoRequestValidation.validateUpdateRequest,
   todoRequestOperations.editTodo
 );
 
-route.delete('/tasks/:id', todoRequestOperations.deleteTodo);
+route.delete(
+  '/delete/:id',
+  todoRequestValidation.validateDeleteRequest,
+  todoRequestOperations.deleteTodo
+);
 
-route.delete('/tasks', todoRequestOperations.deleteAllTodos);
+route.delete(
+  '/delete',
+  todoRequestValidation.validateDeleteAllRequest,
+  todoRequestOperations.deleteAllTodos
+);
 
 route.get(
-  '/tasks/search',
+  '/search',
   todoRequestValidation.validateSearchRequest,
   todoRequestOperations.searchTodos
 );
 
-route.get('/tasks/sort', todoRequestOperations.sortTodos);
+route.get('/sort', todoRequestOperations.sortTodos);
 
 export default route;

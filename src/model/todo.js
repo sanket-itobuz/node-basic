@@ -39,5 +39,9 @@ taskModel.query.byTag = function (tag) {
   return this.where({ tags: new RegExp(tag, 'i') });
 };
 
+taskModel.query.byUserId = function (userId) {
+  return this.where({ userId });
+};
+
 const task = mongoose.model('Task', taskModel);
 export default task;

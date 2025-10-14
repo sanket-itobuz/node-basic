@@ -15,14 +15,14 @@ export default async function sendOTP(req, res, next) {
 
     console.log(otp);
 
-    let result = await OTP.findOne({ otp: otp });
+    // let result = await OTP.findOne({ otp: otp });
 
-    while (result) {
-      otp = otpGenerator.generate(6, {
-        upperCaseAlphabets: false,
-      });
-      result = await OTP.findOne({ otp: otp });
-    }
+    // while (result) {
+    //   otp = otpGenerator.generate(6, {
+    //     upperCaseAlphabets: false,
+    //   });
+    //   result = await OTP.findOne({ otp: otp });
+    // }
 
     const otpPayload = { email, otp };
     const otpBody = await OTP.create(otpPayload);
@@ -30,10 +30,10 @@ export default async function sendOTP(req, res, next) {
     const mailResponse = await mailSender(
       email,
       'Verification Email',
-      `<h1>Please confirm your OTP</h1>
-       <p>Here is your OTP code: ${otp}</p>`
+      `<h3>Please confirm your OTP</h3>
+       <p>Here is your OTP: ${otp}</p>`
     );
-    console.log('Email sent successfully: ', mailResponse);
+    console.log(mailResponse);
 
     res.status(200).json({
       success: true,

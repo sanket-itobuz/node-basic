@@ -12,7 +12,7 @@ export const authSignupUserSchema = yup.object({
 });
 
 export const authUserLoginSchema = yup.object({
-  username: yup.string().required(),
+  email: yup.string().required(),
   password: yup.string().required(),
 });
 

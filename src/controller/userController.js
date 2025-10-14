@@ -2,38 +2,46 @@
 import bcrypt from 'bcrypt';
 import User from '../model/user.js';
 import OTP from '../model/otp.js';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import TokenGenerator from '../utility/tokenGenerator.js';
 
 export default class UserOperations {
-  secretKey = process.env.JWT_SECRET_KEY;
-  refreshToken = process.env.JWT_REFRESH_TOKEN;
-
   saveUser = async (req, res, next) => {
     try {
-      const { username, email, password, role, otp, isVerified } = req.body;
+      const { username, email, password, role, otp } = req.body;
 
       const existingUser = await User.findOne({ email });
 
-      if (existingUser || isVerified) {
+      if (existingUser) {
         return res.status(400).json({
           success: false,
           message: 'User already exists',
         });
       }
 
-      // Find the most recent OTP for the email
-      const response = await OTP.find({ email })
-        .sort({ createdAt: -1 })
-        .limit(1);
+      let isVerified = false;
 
-      if (response.length === 0 || otp !== response[0].otp) {
-        return res.status(400).json({
-          success: false,
-          message: 'The OTP is not valid',
-        });
+      if (otp) {
+        const response = await OTP.find({ email })
+          .sort({ createdAt: -1 })
+          .limit(1);
+
+        if (response.length === 0) {
+          return res.status(400).json({
+            success: false,
+            message: 'The OTP is not valid',
+          });
+        }
+
+        const latestOtp = response[0].otp;
+
+        if (otp !== latestOtp) {
+          return res.status(400).json({
+            success: true,
+            message: 'Invalid OTP',
+          });
+        }
+
+        isVerified = true;
       }
 
       const newUser = await User.create({
@@ -41,12 +49,14 @@ export default class UserOperations {
         email,
         password,
         role,
-        isVerified: true,
+        isVerified,
       });
 
       return res.status(201).json({
         success: true,
-        message: 'User registered successfully',
+        message: isVerified
+          ? 'User Registered and Verified'
+          : 'User Registered verification pending',
         user: newUser,
       });
     } catch (err) {
@@ -56,10 +66,10 @@ export default class UserOperations {
 
   loginUser = async (req, res, next) => {
     try {
-      const username = req.body.username;
+      const email = req.body.email;
       const password = req.body.password;
 
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ email });
 
       if (!user) {
         return res
@@ -75,10 +85,14 @@ export default class UserOperations {
           .json({ message: 'Authentication failed', success: false });
       }
 
-      const token = jwt.sign({ userId: user._id }, this.secretKey, {
-        expiresIn: process.env.JWT_TOKEN_EXPIRY,
-      });
-      res.status(200).json({ success: true, token: token, user: user });
+      const tokenGenerator = new TokenGenerator();
+
+      const accessToken = tokenGenerator.accessTokenGenerator(user._id);
+      const refreshToken = tokenGenerator.refreshTokenGenerator(user._id);
+
+      res
+        .status(200)
+        .json({ success: true, accessToken, refreshToken, user: user });
     } catch (err) {
       next(err);
     }
@@ -86,7 +100,6 @@ export default class UserOperations {
 
   resetPassword = async (req, res, next) => {
     try {
-      console.log('reset-password');
       const otp = req.body.otp;
       const email = req.body.email;
 

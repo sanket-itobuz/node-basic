@@ -14,7 +14,7 @@ export default class UserValidations {
       } else {
         req.body.role = 'user';
       }
-      req.body.password = await bcrypt(req.body.password, 10);
+      req.body.password = await bcrypt.hash(req.body.password, 10);
 
       const validUser = await authSignupUserSchema.validate(req.body, {
         abortEarly: false,

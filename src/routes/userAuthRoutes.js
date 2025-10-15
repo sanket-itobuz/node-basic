@@ -13,11 +13,13 @@ route.post(
   userAuthValidations.validateSignUpRequest,
   userAuthOperations.saveUser
 );
+
 route.post(
   '/auth/login',
   userAuthValidations.validateLoginRequest,
   userAuthOperations.loginUser
 );
+
 route.post('/auth/otp', sendOTP);
 
 route.post(
@@ -30,6 +32,12 @@ route.post(
   '/auth/refresh',
   userAuthValidations.validateRefreshRequest,
   userAuthOperations.refreshToken
+);
+
+route.post(
+  '/auth',
+  userAuthValidations.validateUser,
+  userAuthOperations.getUser
 );
 
 export default route;

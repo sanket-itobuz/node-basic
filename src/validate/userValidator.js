@@ -74,4 +74,22 @@ export default class UserValidations {
       next(err);
     }
   };
+
+  validateUser = async (req, res, next) => {
+    try {
+      const authorization = req.headers.authorization;
+      const accessToken = authorization.split(' ')[1];
+
+      const payload = jwt.verify(
+        accessToken,
+        process.env.JWT_ACCESS_SECRET_KEY
+      );
+      console.log(payload);
+      req.userId = payload.id;
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
 }

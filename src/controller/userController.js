@@ -144,4 +144,15 @@ export default class UserOperations {
       next(err);
     }
   };
+
+  getUser = async (req, res, next) => {
+    try {
+      const userId = req.userId;
+
+      const user = await User.findById(userId);
+      res.status(200).json(user);
+    } catch (err) {
+      next(err);
+    }
+  };
 }

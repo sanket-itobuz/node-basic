@@ -1,10 +1,13 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import {
   authSignupUserSchema,
   authUserLoginSchema,
   updatePasswordSchema,
 } from '../schema/userSchema.js';
 
-import bcrypt from 'bcrypt';
+dotenv.config();
 
 export default class UserValidations {
   validateSignUpRequest = async (req, res, next) => {
@@ -14,6 +17,7 @@ export default class UserValidations {
       } else {
         req.body.role = 'user';
       }
+
       req.body.password = await bcrypt.hash(req.body.password, 10);
 
       const validUser = await authSignupUserSchema.validate(req.body, {
@@ -49,6 +53,22 @@ export default class UserValidations {
         stripUnknown: true,
       });
       console.log(validResetRequest);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  validateRefreshRequest = async (req, res, next) => {
+    try {
+      const refreshToken = req.headers.authorization;
+
+      const payload = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET_KEY
+      );
+
+      req.userId = payload.id;
       next();
     } catch (err) {
       next(err);

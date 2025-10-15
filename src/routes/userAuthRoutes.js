@@ -26,4 +26,10 @@ route.post(
   userAuthOperations.resetPassword
 );
 
+route.post(
+  '/auth/refresh',
+  userAuthValidations.validateRefreshRequest,
+  userAuthOperations.refreshToken
+);
+
 export default route;

@@ -90,9 +90,7 @@ export default class UserOperations {
       const accessToken = tokenGenerator.accessTokenGenerator(user._id);
       const refreshToken = tokenGenerator.refreshTokenGenerator(user._id);
 
-      res
-        .status(200)
-        .json({ success: true, accessToken, refreshToken, user: user });
+      res.status(200).json({ success: true, accessToken, refreshToken, user });
     } catch (err) {
       next(err);
     }
@@ -127,6 +125,21 @@ export default class UserOperations {
         success: true,
         updatedUser,
       });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  refreshToken = async (req, res, next) => {
+    try {
+      const userId = req.userId;
+
+      const tokenGenerator = new TokenGenerator();
+
+      const accessToken = tokenGenerator.accessTokenGenerator(userId);
+      const refreshToken = tokenGenerator.refreshTokenGenerator(userId);
+
+      res.status(200).json({ success: true, accessToken, refreshToken });
     } catch (err) {
       next(err);
     }

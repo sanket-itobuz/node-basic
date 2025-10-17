@@ -36,7 +36,7 @@ export default class UserOperations {
 
         if (otp !== latestOtp) {
           return res.status(400).json({
-            success: true,
+            success: false,
             message: 'Invalid OTP',
           });
         }
@@ -55,7 +55,7 @@ export default class UserOperations {
       return res.status(201).json({
         success: true,
         message: isVerified
-          ? 'User Registered and Verified'
+          ? 'User Successfully Registered and Verified'
           : 'User Registered verification pending',
         user: newUser,
       });
@@ -74,7 +74,7 @@ export default class UserOperations {
       if (!user) {
         return res
           .status(401)
-          .json({ message: 'Authentication failed', success: false });
+          .json({ message: `User doesn't Exists`, success: false });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
@@ -82,7 +82,7 @@ export default class UserOperations {
       if (!passwordMatch) {
         return res
           .status(401)
-          .json({ message: 'Authentication failed', success: false });
+          .json({ message: 'Invalid Password', success: false });
       }
 
       const tokenGenerator = new TokenGenerator();
@@ -90,7 +90,13 @@ export default class UserOperations {
       const accessToken = tokenGenerator.accessTokenGenerator(user._id);
       const refreshToken = tokenGenerator.refreshTokenGenerator(user._id);
 
-      res.status(200).json({ success: true, accessToken, refreshToken, user });
+      res.status(200).json({
+        message: 'Login Successful',
+        success: true,
+        accessToken,
+        refreshToken,
+        user,
+      });
     } catch (err) {
       next(err);
     }
@@ -139,7 +145,12 @@ export default class UserOperations {
       const accessToken = tokenGenerator.accessTokenGenerator(userId);
       const refreshToken = tokenGenerator.refreshTokenGenerator(userId);
 
-      res.status(200).json({ success: true, accessToken, refreshToken });
+      res.status(200).json({
+        message: 'New Token Generated',
+        success: true,
+        accessToken,
+        refreshToken,
+      });
     } catch (err) {
       next(err);
     }

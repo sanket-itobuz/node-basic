@@ -32,7 +32,7 @@ route.delete(
 );
 
 route.delete(
-  '/delete',
+  '/clear',
   todoRequestValidation.validateDeleteAllRequest,
   todoRequestOperations.deleteAllTodos
 );

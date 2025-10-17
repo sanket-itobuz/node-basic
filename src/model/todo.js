@@ -43,5 +43,5 @@ taskModel.query.byUserId = function (userId) {
   return this.where({ userId });
 };
 
-const task = mongoose.model('Task', taskModel);
-export default task;
+const Task = mongoose.model('Task', taskModel);
+export default Task;

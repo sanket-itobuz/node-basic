@@ -1,28 +1,30 @@
-// import User from '../model/user.js';
+import User from '../model/user.js';
 import OTP from '../model/otp.js';
-import otpGenerator from 'otp-generator';
 import mailSender from '../utility/mailSender.js';
 
 export default async function sendOTP(req, res, next) {
   try {
     const email = req.body.email;
+    const purpose = req.body.purpose;
 
-    let otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
+    const existingUser = await User.findOne({ email });
 
+    if (existingUser && purpose) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists',
+      });
+    }
+
+    if (!existingUser && !purpose) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Email',
+      });
+    }
+
+    let otp = Math.floor(Math.random() * 10000);
     console.log(otp);
-
-    // let result = await OTP.findOne({ otp: otp });
-
-    // while (result) {
-    //   otp = otpGenerator.generate(6, {
-    //     upperCaseAlphabets: false,
-    //   });
-    //   result = await OTP.findOne({ otp: otp });
-    // }
 
     const otpPayload = { email, otp };
     const otpBody = await OTP.create(otpPayload);

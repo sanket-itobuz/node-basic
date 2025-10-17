@@ -61,7 +61,8 @@ export default class UserValidations {
 
   validateRefreshRequest = async (req, res, next) => {
     try {
-      const refreshToken = req.headers.authorization;
+      const authorization = req.headers.authorization;
+      const refreshToken = authorization.split(' ')[1];
 
       const payload = jwt.verify(
         refreshToken,

@@ -62,7 +62,7 @@ export default class ToDoOperations {
       const deletedItem = await Task.findByIdAndDelete(id);
 
       res.status(200).json({
-        message: `Todo with id : ${id} successfully Deleted`,
+        message: `Todo Successfully Deleted`,
         success: true,
         deletedItem,
       });
@@ -78,11 +78,11 @@ export default class ToDoOperations {
       console.log(userId);
 
       const allTodos = await Task.deleteMany({ userId });
+      console.log(allTodos);
 
       res.status(200).json({
         message: 'All Todos successfully Deleted',
         success: true,
-        todos: allTodos,
       });
     } catch (err) {
       next(err);

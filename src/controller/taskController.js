@@ -4,10 +4,12 @@ export default class ToDoOperations {
   getAllTodos = async (req, res, next) => {
     try {
       const userId = req.userId;
+
       const allTodos = await Task.find({ userId });
 
       res.status(200).json(allTodos);
     } catch (err) {
+      res.status(200);
       next(err);
     }
   };
@@ -20,8 +22,10 @@ export default class ToDoOperations {
       res
         .status(200)
         .json({ message: 'Todo Successfully Added', success: true });
+
       console.log(todo);
     } catch (err) {
+      res.status(200);
       next(err);
     }
   };
@@ -39,9 +43,8 @@ export default class ToDoOperations {
       );
 
       if (!updatedTask) {
-        return res
-          .status(404)
-          .json({ message: 'Task not found', success: false });
+        res.status(404);
+        throw new Error('Task not found');
       }
 
       res.status(200).json({
@@ -57,7 +60,6 @@ export default class ToDoOperations {
   deleteTodo = async (req, res, next) => {
     try {
       const id = req.params.id;
-      // const userId = req.userId;
 
       const deletedItem = await Task.findByIdAndDelete(id);
 
@@ -75,9 +77,8 @@ export default class ToDoOperations {
     try {
       const userId = req.userId;
 
-      console.log(userId);
-
       const allTodos = await Task.deleteMany({ userId });
+
       console.log(allTodos);
 
       res.status(200).json({
@@ -104,7 +105,7 @@ export default class ToDoOperations {
           .byTag(searchTag);
       }
 
-      res.json(filteredTodos);
+      res.status(200).json(filteredTodos);
     } catch (err) {
       next(err);
     }
@@ -117,7 +118,7 @@ export default class ToDoOperations {
         isCompleted: 'asc',
       });
 
-      res.send(allTodos);
+      res.status(200).json(allTodos);
     } catch (err) {
       next(err);
     }

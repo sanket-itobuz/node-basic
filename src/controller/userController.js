@@ -12,10 +12,8 @@ export default class UserOperations {
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: 'User already exists',
-        });
+        res.status(404);
+        throw new Error('User already exists');
       }
 
       let isVerified = false;
@@ -26,19 +24,15 @@ export default class UserOperations {
           .limit(1);
 
         if (response.length === 0) {
-          return res.status(400).json({
-            success: false,
-            message: 'The OTP is not valid',
-          });
+          res.status(400);
+          throw new Error('The OTP is not valid');
         }
 
         const latestOtp = response[0].otp;
 
         if (otp !== latestOtp) {
-          return res.status(400).json({
-            success: false,
-            message: 'Invalid OTP',
-          });
+          res.status(400);
+          throw new Error('Invalid OTP');
         }
 
         isVerified = true;
@@ -72,17 +66,15 @@ export default class UserOperations {
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res
-          .status(401)
-          .json({ message: `User doesn't Exists`, success: false });
+        res.status(401);
+        throw new Error(`User doesn't Exists`);
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (!passwordMatch) {
-        return res
-          .status(401)
-          .json({ message: 'Invalid Password', success: false });
+        res.status(401);
+        throw new Error('Invalid Password');
       }
 
       const tokenGenerator = new TokenGenerator();
@@ -113,10 +105,8 @@ export default class UserOperations {
         .limit(1);
 
       if (response.length === 0 || otp !== response[0].otp) {
-        return res.status(400).json({
-          success: false,
-          message: 'The OTP is not valid',
-        });
+        res.status(400);
+        throw new Error('The OTP is not valid');
       }
 
       const filter = { email: email };
@@ -161,8 +151,10 @@ export default class UserOperations {
       const userId = req.userId;
 
       const user = await User.findById(userId);
+
       res.status(200).json(user);
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };

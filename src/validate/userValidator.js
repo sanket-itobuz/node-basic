@@ -38,6 +38,7 @@ export default class UserValidations {
         abortEarly: false,
         stripUnknown: true,
       });
+
       console.log(validUser);
       next();
     } catch (err) {
@@ -48,10 +49,12 @@ export default class UserValidations {
   validateResetPasswordRequest = async (req, res, next) => {
     try {
       req.body.password = await bcrypt.hash(req.body.password, 10);
+
       const validResetRequest = await updatePasswordSchema.validate(req.body, {
         abortEarly: false,
         stripUnknown: true,
       });
+
       console.log(validResetRequest);
       next();
     } catch (err) {
@@ -85,11 +88,13 @@ export default class UserValidations {
         accessToken,
         process.env.JWT_ACCESS_SECRET_KEY
       );
+
       console.log(payload);
       req.userId = payload.id;
 
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };

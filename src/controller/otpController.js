@@ -10,17 +10,13 @@ export default async function sendOTP(req, res, next) {
     const existingUser = await User.findOne({ email });
 
     if (existingUser && purpose) {
-      return res.status(400).json({
-        success: false,
-        message: 'User already exists',
-      });
+      res.status(400);
+      throw new Error('User already exists');
     }
 
     if (!existingUser && !purpose) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid Email',
-      });
+      res.status(400);
+      throw new Error('Invalid Email');
     }
 
     let otp = Math.floor(Math.random() * 10000);
@@ -35,6 +31,7 @@ export default async function sendOTP(req, res, next) {
       `<h3>Please confirm your OTP</h3>
        <p>Here is your OTP: ${otp}</p>`
     );
+
     console.log(mailResponse);
 
     res.status(200).json({

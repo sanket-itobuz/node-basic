@@ -35,7 +35,7 @@ route.post(
 );
 
 route.post(
-  '/auth',
+  '/auth/fetch',
   userAuthValidations.validateUser,
   userAuthOperations.getUser
 );

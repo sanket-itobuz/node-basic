@@ -68,6 +68,7 @@ export default class ToDoValidations {
         abortEarly: false,
         stripUnknown: true,
       });
+
       console.log(validTodo);
       next();
     } catch (err) {
@@ -129,6 +130,7 @@ export default class ToDoValidations {
         abortEarly: false,
         stripUnknown: true,
       });
+
       console.log(validTodo);
       next();
     } catch (err) {

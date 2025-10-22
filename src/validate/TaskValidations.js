@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export default class ToDoValidations {
+export default class TaskValidations {
   validateFetchRequest = async (req, res, next) => {
     try {
       const authorization = req.headers.authorization;

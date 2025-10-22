@@ -1,6 +1,6 @@
-import Task from '../model/todo.js';
+import Task from '../model/task.js';
 
-export default class ToDoOperations {
+export default class TaskController {
   getAllTodos = async (req, res, next) => {
     try {
       const userId = req.userId;

@@ -1,48 +1,48 @@
 import express from 'express';
-import ToDoOperations from '../controller/taskController.js';
-import ToDoValidations from '../validate/taskValidator.js';
+import TaskController from '../controller/TaskController.js';
+import TaskValidations from '../validate/TaskValidations.js';
 
 const route = express.Router();
 
-const todoRequestValidation = new ToDoValidations();
-const todoRequestOperations = new ToDoOperations();
+const taskRequestValidation = new TaskValidations();
+const taskRequestOperations = new TaskController();
 
 route.get(
   '/fetch',
-  todoRequestValidation.validateFetchRequest,
-  todoRequestOperations.getAllTodos
+  taskRequestValidation.validateFetchRequest,
+  taskRequestOperations.getAllTodos
 );
 
 route.post(
   '/save',
-  todoRequestValidation.validateInsertRequest,
-  todoRequestOperations.saveTodo
+  taskRequestValidation.validateInsertRequest,
+  taskRequestOperations.saveTodo
 );
 
 route.put(
   '/edit',
-  todoRequestValidation.validateUpdateRequest,
-  todoRequestOperations.editTodo
+  taskRequestValidation.validateUpdateRequest,
+  taskRequestOperations.editTodo
 );
 
 route.delete(
   '/delete/:id',
-  todoRequestValidation.validateDeleteRequest,
-  todoRequestOperations.deleteTodo
+  taskRequestValidation.validateDeleteRequest,
+  taskRequestOperations.deleteTodo
 );
 
 route.delete(
   '/clear',
-  todoRequestValidation.validateDeleteAllRequest,
-  todoRequestOperations.deleteAllTodos
+  taskRequestValidation.validateDeleteAllRequest,
+  taskRequestOperations.deleteAllTodos
 );
 
 route.get(
   '/search',
-  todoRequestValidation.validateSearchRequest,
-  todoRequestOperations.searchTodos
+  taskRequestValidation.validateSearchRequest,
+  taskRequestOperations.searchTodos
 );
 
-route.get('/sort', todoRequestOperations.sortTodos);
+route.get('/sort', taskRequestOperations.sortTodos);
 
 export default route;

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import taskRouter from './routes/taskRoutes.js';
 import userRouter from './routes/userAuthRoutes.js';
 import cors from 'cors';
-import errorHandler from './error/errorhandler.js';
+import errorHandler from './error/errorHandler.js';
 import connectDatabase from './dbConfig/dbConnection.js';
 import loggerMiddleware from './middleware/loggerMiddleware.js';
 

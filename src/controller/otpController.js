@@ -1,15 +1,15 @@
-import User from '../model/user.js';
-import OTP from '../model/otp.js';
+import User from '../model/User.js';
+import OTP from '../model/Otp.js';
 import mailSender from '../utility/mailSender.js';
 
-export default async function sendOTP(req, res, next) {
+export default async function sendOtp(req, res, next) {
   try {
     const email = req.body.email;
     const purpose = req.body.purpose;
 
     const existingUser = await User.findOne({ email });
 
-    if (existingUser && purpose) {
+    if (existingUser && existingUser.isVerified && purpose) {
       res.status(400);
       throw new Error('User already exists');
     }
@@ -19,7 +19,7 @@ export default async function sendOTP(req, res, next) {
       throw new Error('Invalid Email');
     }
 
-    let otp = Math.floor(Math.random() * 10000);
+    let otp = Math.floor(1000 + Math.random() * 9000);
     console.log(otp);
 
     const otpPayload = { email, otp };

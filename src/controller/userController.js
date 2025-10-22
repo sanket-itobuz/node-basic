@@ -1,58 +1,66 @@
-// import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import User from '../model/user.js';
-import OTP from '../model/otp.js';
-import TokenGenerator from '../utility/tokenGenerator.js';
+import User from '../model/User.js';
+import OTP from '../model/Otp.js';
+import TokenGenerator from '../utility/TokenGenerator.js';
 
-export default class UserOperations {
+export default class UserController {
   saveUser = async (req, res, next) => {
     try {
       const { username, email, password, role, otp } = req.body;
 
-      const existingUser = await User.findOne({ email });
+      console.log(otp);
 
-      if (existingUser) {
-        res.status(404);
-        throw new Error('User already exists');
-      }
+      if (!otp) {
+        const newUser = await User.create({
+          username,
+          email,
+          password,
+          role,
+          isVerified: false,
+        });
 
-      let isVerified = false;
+        return res.status(201).json({
+          success: true,
+          message: 'User Registered but not verified',
+          user: newUser,
+        });
+      } else {
+        const existingUser = await User.findOne({ email });
 
-      if (otp) {
-        const response = await OTP.find({ email })
-          .sort({ createdAt: -1 })
-          .limit(1);
+        if (existingUser && existingUser.isVerified) {
+          res.status(404);
+          throw new Error('User already exists');
+        } else if (existingUser && !existingUser.isVerified) {
+          const response = await OTP.find({ email })
+            .sort({ createdAt: -1 })
+            .limit(1);
 
-        if (response.length === 0) {
-          res.status(400);
-          throw new Error('The OTP is not valid');
+          if (response.length === 0) {
+            res.status(400);
+            throw new Error('The OTP is not valid');
+          }
+
+          const latestOtp = response[0].otp;
+
+          if (otp !== latestOtp) {
+            res.status(400);
+            throw new Error('Invalid OTP');
+          }
+
+          const update = { isVerified: true };
+
+          const updatedUser = await User.findOneAndUpdate({ email }, update, {
+            new: true,
+          });
+
+          console.log(updatedUser);
+
+          return res.status(201).json({
+            success: true,
+            message: 'User Successfully Registered & Verified',
+          });
         }
-
-        const latestOtp = response[0].otp;
-
-        if (otp !== latestOtp) {
-          res.status(400);
-          throw new Error('Invalid OTP');
-        }
-
-        isVerified = true;
       }
-
-      const newUser = await User.create({
-        username,
-        email,
-        password,
-        role,
-        isVerified,
-      });
-
-      return res.status(201).json({
-        success: true,
-        message: isVerified
-          ? 'User Successfully Registered and Verified'
-          : 'User Registered verification pending',
-        user: newUser,
-      });
     } catch (err) {
       next(err);
     }
@@ -109,13 +117,14 @@ export default class UserOperations {
         throw new Error('The OTP is not valid');
       }
 
-      const filter = { email: email };
+      const filter = { email };
 
       const updatedUser = await User.findOneAndUpdate(filter, req.body, {
         new: true,
       });
 
       console.log(updatedUser);
+
       res.status(201).json({
         message: 'Password successfully updated',
         success: true,

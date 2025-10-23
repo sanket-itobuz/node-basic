@@ -1,13 +1,8 @@
-import {
-  insertTaskSchema,
-  searchTaskSchema,
-  updateTaskSchema,
-} from '../schema/taskSchema.js';
-
+import TaskSchema from '../schema/TaskSchema.js';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import config from '../config/envConfig.js';
 
-dotenv.config();
+const taskSchema = new TaskSchema();
 
 export default class TaskValidations {
   validateFetchRequest = async (req, res, next) => {
@@ -15,15 +10,13 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        access_token,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
-      console.log(payload);
+      const payload = jwt.verify(access_token, config.JWT_ACCESS_SECRET_KEY);
+
       req.userId = payload.id;
 
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };
@@ -33,14 +26,11 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        access_token,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
+      const payload = jwt.verify(access_token, config.JWT_ACCESS_SECRET_KEY);
 
       req.body.userId = payload.id;
 
-      const validTodo = await insertTaskSchema.validate(req.body, {
+      const validTodo = await taskSchema.insertTaskSchema.validate(req.body, {
         abortEarly: false,
         stripUnknown: true,
       });
@@ -48,6 +38,7 @@ export default class TaskValidations {
       console.log(validTodo);
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };
@@ -57,14 +48,11 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        access_token,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
+      const payload = jwt.verify(access_token, config.JWT_ACCESS_SECRET_KEY);
 
       req.body.userId = payload.id;
 
-      const validTodo = await updateTaskSchema.validate(req.body, {
+      const validTodo = await taskSchema.updateTaskSchema.validate(req.body, {
         abortEarly: false,
         stripUnknown: true,
       });
@@ -72,6 +60,7 @@ export default class TaskValidations {
       console.log(validTodo);
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };
@@ -81,14 +70,12 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        access_token,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
+      const payload = jwt.verify(access_token, config.JWT_ACCESS_SECRET_KEY);
 
       req.userId = payload.id;
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };
@@ -98,16 +85,12 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      console.log(access_token);
-
-      const payload = jwt.verify(
-        access_token,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
+      const payload = jwt.verify(access_token, config.JWT_ACCESS_SECRET_KEY);
 
       req.userId = payload.id;
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };
@@ -117,8 +100,6 @@ export default class TaskValidations {
       const authorization = req.headers.authorization;
       const access_token = authorization.split(' ')[1];
 
-      console.log(access_token);
-
       const payload = jwt.verify(
         access_token,
         process.env.JWT_ACCESS_SECRET_KEY
@@ -126,7 +107,7 @@ export default class TaskValidations {
 
       req.userId = payload.id;
 
-      const validTodo = await searchTaskSchema.validate(req.query, {
+      const validTodo = await taskSchema.searchTaskSchema.validate(req.query, {
         abortEarly: false,
         stripUnknown: true,
       });
@@ -134,6 +115,7 @@ export default class TaskValidations {
       console.log(validTodo);
       next();
     } catch (err) {
+      res.status(401);
       next(err);
     }
   };

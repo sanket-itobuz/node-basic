@@ -1,12 +1,12 @@
 import express from 'express';
-import UserValidations from '../validate/UserValidations.js';
+import AuthValidations from '../validate/AuthValidations.js';
 import sendOtp from '../controller/otpController.js';
-import UserController from '../controller/UserController.js';
+import AuthController from '../controller/AuthController.js';
 
 const route = express.Router();
 
-const userAuthOperations = new UserController();
-const userAuthValidations = new UserValidations();
+const userAuthOperations = new AuthController();
+const userAuthValidations = new AuthValidations();
 
 route.post(
   '/auth/signup',

@@ -3,7 +3,7 @@ import User from '../model/User.js';
 import OTP from '../model/Otp.js';
 import TokenGenerator from '../utility/TokenGenerator.js';
 
-export default class UserController {
+export default class AuthController {
   saveUser = async (req, res, next) => {
     try {
       const { username, email, password, role, otp } = req.body;
@@ -57,7 +57,7 @@ export default class UserController {
 
           return res.status(201).json({
             success: true,
-            message: 'User Successfully Registered & Verified',
+            message: 'User Successfully Registered',
           });
         }
       }
@@ -71,10 +71,13 @@ export default class UserController {
       const email = req.body.email;
       const password = req.body.password;
 
+      console.log(email + '   ' + password);
+
       const user = await User.findOne({ email });
 
       if (!user) {
         res.status(401);
+        console.log('Invalid User');
         throw new Error(`User doesn't Exists`);
       }
 

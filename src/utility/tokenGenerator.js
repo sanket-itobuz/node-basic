@@ -1,17 +1,16 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from '../config/envConfig.js';
 
 export default class TokenGenerator {
   accessTokenGenerator = (id) => {
     try {
-      const secretKey = process.env.JWT_ACCESS_SECRET_KEY;
-      const expiry = process.env.JWT_ACCESS_TOKEN_EXPIRY;
+      const secretKey = config.JWT_ACCESS_SECRET_KEY;
+      const expiry = config.JWT_ACCESS_TOKEN_EXPIRY;
 
       const accessToken = jwt.sign({ id }, secretKey, {
         expiresIn: expiry,
       });
+
       return accessToken;
     } catch (err) {
       console.log(err);
@@ -20,12 +19,13 @@ export default class TokenGenerator {
 
   refreshTokenGenerator = (id) => {
     try {
-      const secretKey = process.env.JWT_REFRESH_SECRET_KEY;
-      const expiry = process.env.JWT_REFRESH_TOKEN_EXPIRY;
+      const secretKey = config.JWT_REFRESH_SECRET_KEY;
+      const expiry = config.JWT_REFRESH_TOKEN_EXPIRY;
 
       const refreshToken = jwt.sign({ id }, secretKey, {
         expiresIn: expiry,
       });
+
       return refreshToken;
     } catch (err) {
       console.log(err);

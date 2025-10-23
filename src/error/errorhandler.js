@@ -5,7 +5,8 @@ const errorHandler = (err, req, res, next) => {
   }
 
   const status = res.statusCode;
-  const message = res.message || 'Something went wrong, Please try again';
+  const message =
+    err.message || 'Something went wrong, Please Refresh the Page';
 
   res.status(status).json({
     success: false,

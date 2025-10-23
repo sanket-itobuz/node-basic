@@ -9,7 +9,7 @@ export default class TaskController {
 
       res.status(200).json(allTodos);
     } catch (err) {
-      res.status(200);
+      res.status(400);
       next(err);
     }
   };
@@ -21,11 +21,11 @@ export default class TaskController {
 
       res
         .status(200)
-        .json({ message: 'Todo Successfully Added', success: true });
+        .json({ message: 'Task Successfully Added', success: true });
 
       console.log(todo);
     } catch (err) {
-      res.status(200);
+      res.status(400);
       next(err);
     }
   };
@@ -53,6 +53,7 @@ export default class TaskController {
         updatedTask,
       });
     } catch (err) {
+      res.status(400);
       next(err);
     }
   };
@@ -64,11 +65,12 @@ export default class TaskController {
       const deletedItem = await Task.findByIdAndDelete(id);
 
       res.status(200).json({
-        message: `Todo Successfully Deleted`,
+        message: `Task Successfully Deleted`,
         success: true,
         deletedItem,
       });
     } catch (err) {
+      res.status(400);
       next(err);
     }
   };
@@ -82,10 +84,11 @@ export default class TaskController {
       console.log(allTodos);
 
       res.status(200).json({
-        message: 'All Todos successfully Deleted',
+        message: 'All Tasks successfully Deleted',
         success: true,
       });
     } catch (err) {
+      res.status(400);
       next(err);
     }
   };
@@ -107,6 +110,7 @@ export default class TaskController {
 
       res.status(200).json(filteredTodos);
     } catch (err) {
+      res.status(400);
       next(err);
     }
   };
@@ -120,6 +124,7 @@ export default class TaskController {
 
       res.status(200).json(allTodos);
     } catch (err) {
+      res.status(400);
       next(err);
     }
   };

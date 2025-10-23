@@ -1,16 +1,14 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import taskRouter from './routes/taskRoutes.js';
 import userRouter from './routes/userAuthRoutes.js';
 import cors from 'cors';
 import errorHandler from './error/errorHandler.js';
-import connectDatabase from './dbConfig/dbConnection.js';
+import connectDatabase from './config/dbConfig.js';
+import config from './config/envConfig.js';
 import loggerMiddleware from './middleware/loggerMiddleware.js';
 
-dotenv.config();
-
 const app = express();
-const port = process.env.PORT;
+const port = config.PORT;
 
 connectDatabase();
 

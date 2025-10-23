@@ -1,15 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import {
-  authSignupUserSchema,
-  authUserLoginSchema,
-  updatePasswordSchema,
-} from '../schema/userSchema.js';
+import UserSchema from '../schema/UserSchema.js';
+import config from '../config/envConfig.js';
 
-dotenv.config();
+const userSchema = new UserSchema();
 
-export default class UserValidations {
+export default class AuthValidations {
   validateSignUpRequest = async (req, res, next) => {
     try {
       if (req.headers.role === 'admin') {
@@ -20,10 +16,13 @@ export default class UserValidations {
 
       req.body.password = await bcrypt.hash(req.body.password, 10);
 
-      const validUser = await authSignupUserSchema.validate(req.body, {
-        abortEarly: false,
-        stripUnknown: true,
-      });
+      const validUser = await userSchema.authSignupUserSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+          stripUnknown: true,
+        }
+      );
 
       console.log(validUser);
       next();
@@ -34,10 +33,13 @@ export default class UserValidations {
 
   validateLoginRequest = async (req, res, next) => {
     try {
-      const validUser = await authUserLoginSchema.validate(req.body, {
-        abortEarly: false,
-        stripUnknown: true,
-      });
+      const validUser = await userSchema.authUserLoginSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+          stripUnknown: true,
+        }
+      );
 
       console.log(validUser);
       next();
@@ -50,10 +52,13 @@ export default class UserValidations {
     try {
       req.body.password = await bcrypt.hash(req.body.password, 10);
 
-      const validResetRequest = await updatePasswordSchema.validate(req.body, {
-        abortEarly: false,
-        stripUnknown: true,
-      });
+      const validResetRequest = await userSchema.updatePasswordSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+          stripUnknown: true,
+        }
+      );
 
       console.log(validResetRequest);
       next();
@@ -67,10 +72,7 @@ export default class UserValidations {
       const authorization = req.headers.authorization;
       const refreshToken = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET_KEY
-      );
+      const payload = jwt.verify(refreshToken, config.JWT_REFRESH_SECRET_KEY);
 
       req.userId = payload.id;
       next();
@@ -84,12 +86,8 @@ export default class UserValidations {
       const authorization = req.headers.authorization;
       const accessToken = authorization.split(' ')[1];
 
-      const payload = jwt.verify(
-        accessToken,
-        process.env.JWT_ACCESS_SECRET_KEY
-      );
+      const payload = jwt.verify(accessToken, config.JWT_ACCESS_SECRET_KEY);
 
-      console.log(payload);
       req.userId = payload.id;
 
       next();

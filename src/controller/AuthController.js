@@ -170,4 +170,19 @@ export default class AuthController {
       next(err);
     }
   };
+
+  updateProfile = (req, res, next) => {
+    try {
+      console.log(req.file);
+
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded!' });
+      }
+      res
+        .status(200)
+        .json({ message: 'Picture Successfully Uploaded', file: req.file });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

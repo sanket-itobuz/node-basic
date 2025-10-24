@@ -1,5 +1,7 @@
 // eslint-disable-next-line
 const errorHandler = (err, req, res, next) => {
+  console.log(err);
+
   if (res.statusCode == 200) {
     res.status(500);
   }

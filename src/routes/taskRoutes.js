@@ -7,11 +7,7 @@ const route = express.Router();
 const taskRequestValidation = new TaskValidations();
 const taskRequestOperations = new TaskController();
 
-route.get(
-  '/fetch',
-  taskRequestValidation.validateFetchRequest,
-  taskRequestOperations.getAllTodos
-);
+route.get('/fetch', taskRequestOperations.getAllTodos);
 
 route.post(
   '/save',
@@ -25,17 +21,9 @@ route.put(
   taskRequestOperations.editTodo
 );
 
-route.delete(
-  '/delete/:id',
-  taskRequestValidation.validateDeleteRequest,
-  taskRequestOperations.deleteTodo
-);
+route.delete('/delete/:id', taskRequestOperations.deleteTodo);
 
-route.delete(
-  '/clear',
-  taskRequestValidation.validateDeleteAllRequest,
-  taskRequestOperations.deleteAllTodos
-);
+route.delete('/clear', taskRequestOperations.deleteAllTodos);
 
 route.get(
   '/search',

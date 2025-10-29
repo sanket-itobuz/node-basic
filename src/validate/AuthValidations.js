@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserSchema from '../schema/UserSchema.js';
 import config from '../config/envConfig.js';
@@ -13,8 +12,6 @@ export default class AuthValidations {
       } else {
         req.body.role = 'user';
       }
-
-      req.body.password = await bcrypt.hash(req.body.password, 10);
 
       const validUser = await userSchema.authSignupUserSchema.validate(
         req.body,
@@ -50,8 +47,6 @@ export default class AuthValidations {
 
   validateResetPasswordRequest = async (req, res, next) => {
     try {
-      req.body.password = await bcrypt.hash(req.body.password, 10);
-
       const validResetRequest = await userSchema.updatePasswordSchema.validate(
         req.body,
         {

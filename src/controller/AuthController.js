@@ -1,12 +1,14 @@
 import bcrypt from 'bcrypt';
-import User from '../model/User.js';
-import OTP from '../model/Otp.js';
+import User from '../model/userModel.js';
+import OTP from '../model/otpModel.js';
 import TokenGenerator from '../utility/TokenGenerator.js';
 
 export default class AuthController {
   saveUser = async (req, res, next) => {
     try {
-      const { username, email, password, role, otp } = req.body;
+      const { username, email, role, otp } = req.body;
+
+      const password = await bcrypt.hash(req.body.password, 10);
 
       console.log(otp);
 
@@ -71,8 +73,6 @@ export default class AuthController {
       const email = req.body.email;
       const password = req.body.password;
 
-      console.log(email + '   ' + password);
-
       const user = await User.findOne({ email });
 
       if (!user) {
@@ -109,6 +109,8 @@ export default class AuthController {
     try {
       const otp = req.body.otp;
       const email = req.body.email;
+
+      req.body.password = await bcrypt.hash(req.body.password, 10);
 
       // Find the most recent OTP for the email
       const response = await OTP.find({ email })
@@ -154,19 +156,6 @@ export default class AuthController {
         refreshToken,
       });
     } catch (err) {
-      next(err);
-    }
-  };
-
-  getUser = async (req, res, next) => {
-    try {
-      const userId = req.userId;
-
-      const user = await User.findById(userId);
-
-      res.status(200).json(user);
-    } catch (err) {
-      res.status(401);
       next(err);
     }
   };

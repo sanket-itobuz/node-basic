@@ -1,5 +1,5 @@
-import User from '../model/User.js';
-import OTP from '../model/Otp.js';
+import User from '../model/userModel.js';
+import OTP from '../model/otpModel.js';
 import mailSender from '../utility/mailSender.js';
 
 export default async function sendOtp(req, res, next) {

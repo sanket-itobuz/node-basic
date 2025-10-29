@@ -1,4 +1,4 @@
-import Task from '../model/task.js';
+import Task from '../model/taskModel.js';
 
 export default class TaskController {
   getAllTodos = async (req, res, next) => {
@@ -17,6 +17,8 @@ export default class TaskController {
   saveTodo = async (req, res, next) => {
     try {
       const newTodo = req.body;
+      newTodo.userId = req.userId;
+
       const todo = await Task.create(newTodo);
 
       res
@@ -34,7 +36,7 @@ export default class TaskController {
     try {
       const editTodo = req.body;
       const id = req.body.id;
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       const updatedTask = await Task.updateOne(
         { _id: id, userId },
